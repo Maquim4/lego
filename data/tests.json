@@ -24,6 +24,31 @@
           "answer": "0"
         }
       ]
+    },
+    {
+      "theme": "Psychology in Cs",
+      "questions": [
+        {
+          "title": "2*2+1=?",
+          "options": [
+            "1",
+            "5",
+            "6",
+            "3"
+          ],
+          "answer": "5"
+        },
+        {
+          "title": "99+1=?",
+          "options": [
+            "100",
+            "10",
+            "99",
+            "0"
+          ],
+          "answer": "100"
+        }
+      ]
     }
   ]
 }

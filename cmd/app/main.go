@@ -12,8 +12,8 @@ func main() {
 	w.SetMaster()
 	w.CenterOnScreen()
 
-	rend := renderer.NewMainRenderer()
-	rend.Render(w)
+	rend := renderer.NewMainRenderer(w)
+	rend.Render()
 
 	w.Resize(fyne.NewSize(640, 460))
 	w.ShowAndRun()

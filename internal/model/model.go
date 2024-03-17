@@ -1,4 +1,4 @@
-package state
+package model
 
 import (
 	"encoding/json"
@@ -11,34 +11,46 @@ type TestsData struct {
 }
 
 type Test struct {
-	Domain    string     `json:"theme"`
+	Theme     string     `json:"theme"`
 	Questions []Question `json:"questions"`
 }
 
 type Question struct {
 	Title   string   `json:"title"`
 	Options []string `json:"options"`
-	Answer  string   `json:"answer"`
+	Correct string   `json:"answer"`
 }
 
-func LoadTests(path string) (TestsData, error) {
+type Report struct {
+	Test    Test
+	Answers []Answer
+	Right   int
+	Wrong   int
+}
+
+type Answer struct {
+	Question Question
+	Received string
+}
+
+func LoadTests(path string) ([]Test, error) {
 	var testData TestsData
 
 	file, err := os.Open(path)
 	if err != nil {
-		return testData, err
+		return nil, err
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return testData, err
+		return nil, err
 	}
 
 	err = json.Unmarshal(data, &testData)
 	if err != nil {
-		return testData, err
+		return nil, err
 	}
 
-	return testData, nil
+	return testData.Tests, nil
 }

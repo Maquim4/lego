@@ -24,6 +24,7 @@ func NewReportPage(back Renderer, test model.Test) *ReportPage {
 func (r *ReportPage) Render(w fyne.Window) {
 
 	back := widget.NewButton("menu", func() {
+		r.cleanReport()
 		r.back.Render(w)
 	})
 
@@ -37,4 +38,10 @@ func (r *ReportPage) Render(w fyne.Window) {
 
 	w.SetContent(
 		content)
+}
+
+func (r *ReportPage) cleanReport() {
+	r.report.Answers = make([]model.Answer, 0)
+	r.report.Right = 0
+	r.report.Wrong = 0
 }

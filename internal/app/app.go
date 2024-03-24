@@ -16,7 +16,7 @@ type App struct {
 func NewApp() *App {
 	a := app.NewWithID(ID)
 
-	w := a.NewWindow("<Enjoy,live, go test3>")
+	w := a.NewWindow("<Enjoy, live, go test3>")
 	w.SetMaster()
 	w.CenterOnScreen()
 	w.Resize(fyne.NewSize(640, 460))

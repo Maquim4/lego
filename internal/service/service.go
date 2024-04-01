@@ -1,6 +1,8 @@
 package service
 
 import (
+	"log"
+
 	"github.com/Maquim4/lego/internal/model"
 )
 
@@ -22,15 +24,10 @@ func NewTestVerifier() *TestVerifier {
 
 func (t *TestVerifier) VerifyQuestions(report *model.Report) {
 	for _, a := range report.Answers {
-		if verify(a) {
-			report.Right++
+		res, err := a.Validate()
+		if err != nil {
+			log.Panicln(err)
 		}
+		report.Right += res
 	}
-}
-
-func verify(answer model.Answer) bool {
-	if answer.Question.Correct == answer.Received {
-		return true
-	}
-	return false
 }

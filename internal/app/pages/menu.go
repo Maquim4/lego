@@ -1,6 +1,9 @@
 package pages
 
 import (
+	"image/color"
+	"log"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -9,8 +12,6 @@ import (
 	"github.com/Maquim4/lego/internal/controller"
 	"github.com/Maquim4/lego/internal/model"
 	"github.com/Maquim4/lego/internal/service"
-	"image/color"
-	"log"
 )
 
 type Renderer interface {
@@ -62,7 +63,7 @@ func (m *Menu) Render(w fyne.Window) {
 }
 
 func (m *Menu) testsToRenderers() {
-	tests, err := model.LoadTests("data/tests.json")
+	tests, err := model.LoadTests("data/test3.json")
 	if err != nil {
 		log.Fatalf("can't open tests file: %v", err)
 	}

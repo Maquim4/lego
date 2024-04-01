@@ -1,13 +1,14 @@
 package pages
 
 import (
+	"log"
+	"strconv"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Maquim4/lego/internal/controller"
 	"github.com/Maquim4/lego/internal/model"
-	"log"
-	"strconv"
 )
 
 type ReportRenderer interface {
@@ -19,6 +20,9 @@ type TestPage struct {
 	test    model.Test
 	report  ReportRenderer
 	handler controller.Handler
+	curr    int
+	prev    int
+	next    int
 }
 
 func (t *TestPage) Get() model.Test {
@@ -31,6 +35,7 @@ func NewTestPage(back Renderer, test model.Test, report ReportRenderer, handler 
 		test:    test,
 		report:  report,
 		handler: handler,
+		curr:    1,
 	}
 }
 
@@ -50,27 +55,36 @@ func (t *TestPage) Render(w fyne.Window) {
 		content)
 }
 
-func (t *TestPage) radioQuestionTemplate(q model.Question, index int) fyne.CanvasObject {
-	combo := widget.NewRadioGroup(q.Options, func(value string) {
-		log.Printf("Q:%s A:%v", q.Title, value)
+func (t *TestPage) radioQuestionTemplate(q model.Quest, index int) fyne.CanvasObject {
+	combo := widget.NewRadioGroup(q.QOptions(), func(value string) {
+		log.Printf("Q:%#s A:%#v", q.QTitle, value)
 		t.handler.AddAnswer(t.report.Get(), model.Answer{
-			Question: q,
+			Question: model.SwitchQuest(q),
 			Received: value,
 		})
 	})
 
 	return container.NewVBox(
-		widget.NewLabel(q.Title),
+		widget.NewLabel(q.QTitle()),
 		combo)
 }
 
 func (t *TestPage) tabsTemplate() fyne.CanvasObject {
-	tabs := container.NewAppTabs()
-	tabs.SetTabLocation(container.TabLocationLeading)
+	view := container.NewStack()
 
+	buttons := container.NewVBox()
 	for i, v := range t.test.Questions {
-		tabs.Append(container.NewTabItem(strconv.Itoa(i+1), t.radioQuestionTemplate(v, i)))
+		view.Add(t.radioQuestionTemplate(v.Question, i))
+		view.Objects[i].Hide()
+		buttons.Add(widget.NewButton(strconv.Itoa(i+1), func() {
+			view.Objects[t.curr-1].Hide()
+			view.Objects[i].Show()
+			t.curr = i + 1
+		}))
 	}
+	view.Objects[t.curr-1].Show()
 
+	tabs := container.NewHSplit(container.NewVScroll(buttons), view)
+	tabs.SetOffset(0.1)
 	return tabs
 }

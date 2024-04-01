@@ -1,9 +1,9 @@
-{
-  "tests": [
+[
     {
       "theme": "math",
       "questions": [
         {
+          "type": "sgl",
           "title": "2+2=?",
           "options": [
             "1",
@@ -11,9 +11,10 @@
             "3",
             "4"
           ],
-          "answer": "4"
+          "correct": "4"
         },
         {
+          "type": "sgl",
           "title": "9-9=?",
           "options": [
             "1",
@@ -21,7 +22,15 @@
             "9",
             "19"
           ],
-          "answer": "0"
+          "correct": "0"
+        },
+        {
+          "type": "cef",
+          "title": "Rate yourself",
+          "options": {
+              "confident about results": 10,
+              "not confident at all": 0
+          }
         }
       ]
     },
@@ -29,6 +38,7 @@
       "theme": "Psychology in Cs",
       "questions": [
         {
+          "type": "sgl",
           "title": "2*2+1=?",
           "options": [
             "1",
@@ -36,9 +46,10 @@
             "6",
             "3"
           ],
-          "answer": "5"
+          "correct": "5"
         },
         {
+          "type": "sgl",
           "title": "99+1=?",
           "options": [
             "100",
@@ -46,9 +57,8 @@
             "99",
             "0"
           ],
-          "answer": "100"
+          "correct": "100"
         }
       ]
     }
-  ]
-}
+]

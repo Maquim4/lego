@@ -38,16 +38,7 @@ func (q WeightQuestion) Validate(i interface{}) (float32, error) {
 }
 
 func (a Answer) Validate() (float32, error) {
-	switch a.Question.(type) {
-	case *SingleCorrectQuestion:
-		return a.Question.Validate(a.Received)
-	case *MultipleCorrectQuestion:
-		return a.Question.Validate(a.Received)
-	case *WeightQuestion:
-		return a.Question.Validate(a.Received)
-	default:
-		return 0, errUnknownQuestionType
-	}
+	return a.Question.Validate(a.Received)
 }
 
 func SwitchQuest(q Quest) Validator {

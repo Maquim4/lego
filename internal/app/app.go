@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"github.com/Maquim4/lego/internal/app/pages"
+	"github.com/Maquim4/lego/tools"
 )
 
 const ID = "github.com/Maquim4/lego"
@@ -15,6 +16,7 @@ type App struct {
 
 func NewApp() *App {
 	a := app.NewWithID(ID)
+	a.Settings().SetTheme(tools.CustomTheme{})
 
 	w := a.NewWindow("<Enjoy, live, go test3>")
 	w.SetMaster()

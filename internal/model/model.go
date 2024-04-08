@@ -7,9 +7,21 @@ import (
 	"os"
 )
 
+const (
+	SingleCorrectType   = "sgl"
+	MultipleCorrectType = "mpl"
+	WeightType          = "cef"
+)
+
 type Test struct {
-	Theme     string                `json:"theme"`
-	Questions []DynamicQuestWrapper `json:"questions"`
+	Theme      string                `json:"theme"`
+	Questions  []DynamicQuestWrapper `json:"questions"`
+	Transcript []Interpretive        `json:"transcript,omitempty"`
+}
+
+type Interpretive struct {
+	Score float32 `json:"score"`
+	Text  string  `json:"text"`
 }
 
 type Quest interface {
@@ -88,9 +100,9 @@ func (q WeightQuestion) QOptions() []string {
 }
 
 var questTypeMap = map[string]func() Quest{
-	"sgl": func() Quest { return &SingleCorrectQuestion{} },
-	"mpl": func() Quest { return &MultipleCorrectQuestion{} },
-	"cef": func() Quest { return &WeightQuestion{} },
+	SingleCorrectType:   func() Quest { return &SingleCorrectQuestion{} },
+	MultipleCorrectType: func() Quest { return &MultipleCorrectQuestion{} },
+	WeightType:          func() Quest { return &WeightQuestion{} },
 }
 
 type DynamicQuestWrapper struct {
@@ -121,8 +133,8 @@ func (d *DynamicQuestWrapper) UnmarshalJSON(bytes []byte) error {
 type Report struct {
 	Test    Test
 	Answers []Answer
-	Right   float32
-	Wrong   int
+	Score   float32
+	Max     float32
 }
 
 type Answer struct {
@@ -130,8 +142,8 @@ type Answer struct {
 	Received interface{}
 }
 
-func LoadTests(path string) ([]Test, error) {
-	var tests []Test
+func LoadTest(path string) (*Test, error) {
+	var test Test
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -144,11 +156,10 @@ func LoadTests(path string) ([]Test, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(data, &tests)
+	err = json.Unmarshal(data, &test)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println(tests)
-	return tests, nil
+	return &test, nil
 }

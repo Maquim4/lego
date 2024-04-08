@@ -1,8 +1,10 @@
 package pages
 
 import (
+	"fmt"
 	"image/color"
 	"log"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -14,6 +16,8 @@ import (
 	"github.com/Maquim4/lego/internal/service"
 )
 
+const DataPath = "data"
+
 type Renderer interface {
 	Render(window fyne.Window)
 }
@@ -23,20 +27,25 @@ type TestRenderer interface {
 	Get() model.Test
 }
 
+type SetRenderer interface {
+	Renderer
+	Get() []TestRenderer
+}
+
 type Menu struct {
-	tests []TestRenderer
+	sets []SetRenderer
 }
 
 func NewMenu() *Menu {
 	m := Menu{}
-	m.testsToRenderers()
+	m.setsToRenderers()
 	return &m
 }
 
 func (m *Menu) Render(w fyne.Window) {
 	tests := widget.NewList(
 		func() int {
-			return len(m.tests)
+			return len(m.sets)
 		},
 		func() fyne.CanvasObject {
 			return widget.NewButton("", func() {
@@ -44,9 +53,9 @@ func (m *Menu) Render(w fyne.Window) {
 			})
 		},
 		func(id widget.ListItemID, object fyne.CanvasObject) {
-			object.(*widget.Button).SetText(m.tests[id].Get().Theme)
+			object.(*widget.Button).SetText(fmt.Sprint(id+1, " тема"))
 			object.(*widget.Button).OnTapped = func() {
-				m.tests[id].Render(w)
+				m.sets[id].Render(w)
 			}
 		})
 
@@ -62,26 +71,26 @@ func (m *Menu) Render(w fyne.Window) {
 
 }
 
-func (m *Menu) testsToRenderers() {
-	tests, err := model.LoadTests("data/test3.json")
+func (m *Menu) setsToRenderers() {
+	dirs, err := os.ReadDir(DataPath)
 	if err != nil {
-		log.Fatalf("can't open tests file: %v", err)
+		log.Fatalf("can't find any test dir: %v", err)
 	}
+	sets := make([]SetRenderer, 0, len(dirs))
 
 	testService := service.NewTestVerifier()
 	testHandler := controller.NewReportHandler(testService)
 
-	pages := make([]TestRenderer, 0, len(tests))
-	for _, t := range tests {
-		pages = append(pages, NewTestPage(m, t, NewReportPage(m, t), testHandler))
+	for _, path := range dirs {
+		sets = append(sets, NewSet(m, fmt.Sprint(DataPath, "/", path.Name()), testHandler))
 	}
-	m.tests = pages
+	m.sets = sets
 }
 
 func styledTxt(txt string) *canvas.Text {
-	text := canvas.NewText(txt, color.White)
+	text := canvas.NewText(txt, color.Black)
 	text.Alignment = fyne.TextAlignCenter
-	text.TextStyle = fyne.TextStyle{Monospace: true}
+	text.TextStyle = fyne.TextStyle{Italic: true}
 	text.TextSize = 17
 	return text
 }

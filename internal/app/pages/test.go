@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"log"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -57,7 +56,7 @@ func (t *TestPage) Render(w fyne.Window) {
 
 func (t *TestPage) radioQuestionTemplate(q model.Quest, index int) fyne.CanvasObject {
 	combo := widget.NewRadioGroup(q.QOptions(), func(value string) {
-		log.Printf("Q:%#s A:%#v", q.QTitle, value)
+		// log.Printf("Q:%#s A:%#v", q.QTitle, value)
 		t.handler.AddAnswer(t.report.Get(), model.Answer{
 			Question: model.SwitchQuest(q),
 			Received: value,
@@ -85,6 +84,14 @@ func (t *TestPage) tabsTemplate() fyne.CanvasObject {
 	view.Objects[t.curr-1].Show()
 
 	tabs := container.NewHSplit(container.NewVScroll(buttons), view)
-	tabs.SetOffset(0.1)
+	tabs.SetOffset(0.2)
 	return tabs
+}
+
+func biNavLayout(renderer Renderer, w fyne.Window, content *fyne.Container, forwardName string, forwardFn func()) fyne.CanvasObject {
+	buttons := container.NewGridWithColumns(2, widget.NewButton("back", func() {
+		renderer.Render(w)
+	}), widget.NewButton(forwardName, forwardFn))
+
+	return container.NewBorder(nil, buttons, nil, nil, content)
 }

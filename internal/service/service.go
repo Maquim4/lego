@@ -28,6 +28,6 @@ func (t *TestVerifier) VerifyQuestions(report *model.Report) {
 		if err != nil {
 			log.Panicln(err)
 		}
-		report.Right += res
+		report.Score += res
 	}
 }

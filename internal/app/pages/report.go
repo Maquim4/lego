@@ -23,19 +23,16 @@ func NewReportPage(back Renderer, test model.Test) *ReportPage {
 }
 
 func (r *ReportPage) Render(w fyne.Window) {
-
 	back := widget.NewButton("menu", func() {
 		r.cleanReport()
 		r.back.Render(w)
 	})
 
-	statistics := container.NewCenter(
-		container.NewVBox(
-			styledTxt(r.report.Test.Theme),
-			styledTxt(fmt.Sprint(r.report.Right, "/", len(r.report.Test.Questions))),
-		))
+	content := container.NewBorder(nil, back, nil, nil, printResult(r.report))
 
-	content := container.NewBorder(nil, back, nil, nil, statistics)
+	if r.Get().Test.Transcript != nil {
+		content.Add(makeTranscript(r.report.Score, r.report.Test.Transcript))
+	}
 
 	w.SetContent(
 		content)
@@ -43,6 +40,24 @@ func (r *ReportPage) Render(w fyne.Window) {
 
 func (r *ReportPage) cleanReport() {
 	r.report.Answers = make([]model.Answer, 0)
-	r.report.Right = 0
-	r.report.Wrong = 0
+	r.report.Score = 0
+	r.report.Max = 0
+}
+
+func printResult(report *model.Report) fyne.CanvasObject {
+	statistics := container.NewVBox(
+		styledTxt("Результат:"),
+		styledTxt(report.Test.Theme),
+	)
+	statistics.Add(styledTxt(fmt.Sprint("Вы набрали ", report.Score, " балл(-а,ов), ответив на ", len(report.Answers), " вопрос(-а,ов)")))
+
+	return container.NewCenter(statistics)
+}
+
+func makeTranscript(score float32, trs []model.Interpretive) fyne.CanvasObject {
+	interpretation := container.NewVBox(
+		styledTxt("Содержательная интерпретация:"),
+	)
+	// todo: add logic
+	return interpretation
 }

@@ -50,21 +50,17 @@ func (t *TestPage) Render(w fyne.Window) {
 
 	content := container.NewBorder(nil, buttons, nil, nil, tabs)
 
-	w.SetContent(
-		content)
+	w.SetContent(content)
 }
 
-func (t *TestPage) radioQuestionTemplate(q model.Quest, index int) fyne.CanvasObject {
-	combo := widget.NewRadioGroup(q.QOptions(), func(value string) {
+func (t *TestPage) radioQuestionTemplate(q model.Question, index int) fyne.CanvasObject {
+	combo := widget.NewRadioGroup(q.KeyOptions(), func(value string) {
 		// log.Printf("Q:%#s A:%#v", q.QTitle, value)
-		t.handler.AddAnswer(t.report.Get(), model.Answer{
-			Question: model.SwitchQuest(q),
-			Received: value,
-		})
+		t.handler.AddAnswer(t.report.Get(), q, value)
 	})
 
 	return container.NewVBox(
-		widget.NewLabel(q.QTitle()),
+		widget.NewLabel(q.Title),
 		combo)
 }
 
@@ -73,7 +69,7 @@ func (t *TestPage) tabsTemplate() fyne.CanvasObject {
 
 	buttons := container.NewVBox()
 	for i, v := range t.test.Questions {
-		view.Add(t.radioQuestionTemplate(v.Question, i))
+		view.Add(t.radioQuestionTemplate(v, i))
 		view.Objects[i].Hide()
 		buttons.Add(widget.NewButton(strconv.Itoa(i+1), func() {
 			view.Objects[t.curr-1].Hide()

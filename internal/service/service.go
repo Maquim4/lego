@@ -22,7 +22,6 @@ func NewTestVerifier() *TestVerifier {
 	return &TestVerifier{}
 }
 
-// VerifyQuestions todo fix verbose
 func (t *TestVerifier) VerifyQuestions(report *model.Report) {
 	err := report.Validate()
 	if err != nil {

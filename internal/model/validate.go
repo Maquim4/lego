@@ -6,19 +6,19 @@ import (
 )
 
 var errUnexpectedReceivedType = errors.New("error: unexpected received type")
-var errUnknownQuestionType = errors.New("error: unexpected question type")
 
 type Validator interface {
 	Validate(interface{}) (float32, error)
+	Variable() string
 }
 
 func (r Report) Validate() error {
-	for i, a := range r.Answers {
+	for _, a := range r.Answers {
 		res, err := a.Validate()
 		if err != nil {
 			log.Panicln(err)
 		}
-		r.Result[r.Test.Questions[i].VarType] += res
+		r.Result[a.Question.Variable()] += res
 	}
 	return nil
 }
@@ -33,6 +33,10 @@ func (q Question) Validate(i interface{}) (float32, error) {
 		sum += q.Opts[v]
 	}
 	return sum, nil
+}
+
+func (q Question) Variable() string {
+	return q.VarType
 }
 
 func (a Answer) Validate() (float32, error) {

@@ -5,6 +5,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Maquim4/lego/internal/controller"
 	"github.com/Maquim4/lego/internal/model"
@@ -39,11 +40,11 @@ func NewTestPage(back Renderer, test model.Test, report ReportRenderer, handler 
 }
 
 func (t *TestPage) Render(w fyne.Window) {
-	tabs := t.tabsTemplate()
+	tabs := t.arrowsLayout()
 
-	buttons := container.NewGridWithColumns(2, widget.NewButton("back", func() {
+	buttons := container.NewGridWithColumns(2, widget.NewButton("в меню", func() {
 		t.back.Render(w)
-	}), widget.NewButton("end", func() {
+	}), widget.NewButton("завершить", func() {
 		t.handler.VerifyQuestions(t.report.Get())
 		t.report.Render(w)
 	}))
@@ -59,8 +60,11 @@ func (t *TestPage) radioQuestionTemplate(q model.Question, index int) fyne.Canva
 		t.handler.AddAnswer(t.report.Get(), q, value)
 	})
 
+	label := widget.NewLabel(q.Title)
+	label.Wrapping = fyne.TextWrapBreak
+
 	return container.NewVBox(
-		widget.NewLabel(q.Title),
+		label,
 		combo)
 }
 
@@ -84,10 +88,36 @@ func (t *TestPage) tabsTemplate() fyne.CanvasObject {
 	return tabs
 }
 
-func biNavLayout(renderer Renderer, w fyne.Window, content *fyne.Container, forwardName string, forwardFn func()) fyne.CanvasObject {
-	buttons := container.NewGridWithColumns(2, widget.NewButton("back", func() {
-		renderer.Render(w)
-	}), widget.NewButton(forwardName, forwardFn))
+func (t *TestPage) arrowsLayout() fyne.CanvasObject {
+	view := container.NewStack()
 
-	return container.NewBorder(nil, buttons, nil, nil, content)
+	buttons := container.NewGridWithColumns(2)
+
+	back := widget.NewButtonWithIcon("назад", theme.NavigateBackIcon(), func() {
+		if t.curr != 0 {
+			view.Objects[t.curr].Hide()
+			view.Objects[t.curr-1].Show()
+			t.curr -= 1
+		}
+	})
+
+	questLen := len(t.test.Questions) - 1
+	next := widget.NewButtonWithIcon("вперед", theme.NavigateNextIcon(), func() {
+		if t.curr < questLen {
+			view.Objects[t.curr].Hide()
+			view.Objects[t.curr+1].Show()
+			t.curr += 1
+		}
+	})
+
+	buttons.Add(container.NewCenter(container.NewGridWrap(fyne.NewSize(320, 100), back)))
+	buttons.Add(container.NewCenter(container.NewGridWrap(fyne.NewSize(320, 100), next)))
+
+	for i, v := range t.test.Questions {
+		view.Add(t.radioQuestionTemplate(v, i))
+		view.Objects[i].Hide()
+	}
+	view.Objects[t.curr].Show()
+
+	return container.NewBorder(nil, buttons, nil, nil, view)
 }

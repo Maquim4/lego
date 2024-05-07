@@ -8,14 +8,14 @@ import (
 
 type Service interface {
 	VerifyQuestions(*model.Report)
-	AddAnswer(*model.Report, model.Answer)
+	AddAnswer(*model.Report, model.Question, []string)
 }
 
 type TestVerifier struct {
 }
 
-func (t *TestVerifier) AddAnswer(report *model.Report, answer model.Answer) {
-	report.Answers = append(report.Answers, answer)
+func (t *TestVerifier) AddAnswer(report *model.Report, q model.Question, values []string) {
+	report.Answers = append(report.Answers, model.Answer{Question: q, Received: values})
 }
 
 func NewTestVerifier() *TestVerifier {
@@ -23,11 +23,8 @@ func NewTestVerifier() *TestVerifier {
 }
 
 func (t *TestVerifier) VerifyQuestions(report *model.Report) {
-	for _, a := range report.Answers {
-		res, err := a.Validate()
-		if err != nil {
-			log.Panicln(err)
-		}
-		report.Score += res
+	err := report.Validate()
+	if err != nil {
+		log.Println(err)
 	}
 }

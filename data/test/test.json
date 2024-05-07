@@ -1,0 +1,99 @@
+{
+  "theme": "Делегирование полномочий и принятие решений",
+  "variables": [
+    "agility",
+    "strength",
+    "intelligence"
+  ],
+  "transcript": [
+    {
+      "var_name": "agility",
+      "results": [
+        {
+          "score": 1,
+          "text": "low agility"
+        },
+        {
+          "score": 2,
+          "text": "mid agility"
+        },
+        {
+          "score": 3,
+          "text": "high agility"
+        }
+      ]
+    },
+    {
+      "var_name": "strength",
+      "results": [
+        {
+          "score": 1,
+          "text": "low strength"
+        },
+        {
+          "score": 2,
+          "text": "mid strength"
+        },
+        {
+          "score": 3,
+          "text": "high strength"
+        }
+      ]
+    },
+    {
+      "var_name": "intelligence",
+      "results": [
+        {
+          "score": 1,
+          "text": "low intelligence"
+        },
+        {
+          "score": 2,
+          "text": "mid intelligence"
+        },
+        {
+          "score": 3,
+          "text": "high intelligence"
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "var_type": "agility",
+      "title": "Когда я принимаю решение, у меня возникает ощущение, как будто мне безумно не хватает времени.",
+      "options": {
+        "Неверно для меня": 1,
+        "Иногда верно": 2,
+        "Верно для меня": 3
+      }
+    },
+    {
+      "var_type": "strength",
+      "title": "Когда я принимаю решение, я предпочитаю рассматривать все альтернативы.",
+      "options": {
+        "Неверно для меня": 1,
+        "Иногда верно": 2,
+        "Верно для меня": 3
+      }
+    },
+    {
+      "var_type": "intelligence",
+      "title": "Я предпочитаю оставлять принятие решений другим людям.",
+      "options": {
+        "Неверно для меня": 1,
+        "Иногда верно": 2,
+        "Верно для меня": 3
+      }
+    },
+    {
+      "var_type": "agility",
+      "title": "Когда я принимаю решение, я пытаюсь найти недостатки у всех альтернатив.",
+      "options": {
+        "Неверно для меня": 1,
+        "Иногда верно": 2,
+        "Верно для меня": 3
+      }
+    }
+  ]
+}

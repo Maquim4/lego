@@ -19,7 +19,9 @@ func (r *ReportPage) Get() *model.Report {
 }
 
 func NewReportPage(back Renderer, test model.Test) *ReportPage {
-	return &ReportPage{back: back, report: &model.Report{Test: test, Answers: make([]model.Answer, 0)}}
+	report := make(map[string]float32, len(test.Variables))
+	answers := make([]model.Answer, 0)
+	return &ReportPage{back: back, report: &model.Report{Test: test, Answers: answers, Result: report}}
 }
 
 func (r *ReportPage) Render(w fyne.Window) {
@@ -30,8 +32,8 @@ func (r *ReportPage) Render(w fyne.Window) {
 
 	content := container.NewBorder(nil, back, nil, nil, printResult(r.report))
 
-	if r.Get().Test.Transcript != nil {
-		content.Add(makeTranscript(r.report.Score, r.report.Test.Transcript))
+	if r.Get().Test.Transcripts != nil {
+		content.Add(makeTranscript(r.Get()))
 	}
 
 	w.SetContent(
@@ -40,8 +42,9 @@ func (r *ReportPage) Render(w fyne.Window) {
 
 func (r *ReportPage) cleanReport() {
 	r.report.Answers = make([]model.Answer, 0)
-	r.report.Score = 0
-	r.report.Max = 0
+	for i := range r.report.Result {
+		r.report.Result[i] = 0
+	}
 }
 
 func printResult(report *model.Report) fyne.CanvasObject {
@@ -49,15 +52,30 @@ func printResult(report *model.Report) fyne.CanvasObject {
 		styledTxt("Результат:"),
 		styledTxt(report.Test.Theme),
 	)
-	statistics.Add(styledTxt(fmt.Sprint("Вы набрали ", report.Score, " балл(-а,ов), ответив на ", len(report.Answers), " вопрос(-а,ов)")))
+	for i := range report.Result {
+		statistics.Add(styledTxt(
+			fmt.Sprintf("%s : %f", i, report.Result[i])))
+	}
 
 	return container.NewCenter(statistics)
 }
 
-func makeTranscript(score float32, trs []model.Interpretive) fyne.CanvasObject {
+func makeTranscript(report *model.Report) fyne.CanvasObject {
 	interpretation := container.NewVBox(
 		styledTxt("Содержательная интерпретация:"),
 	)
-	// todo: add logic
+	for i := range report.Result {
+		s := resolveTranscription(report.Result[i], report.Test.WhereVar(i))
+		interpretation.Add(styledTxt(s))
+	}
 	return interpretation
+}
+
+func resolveTranscription(value float32, results []model.Interpreter) string {
+	for i := len(results) - 1; i >= 0; i-- {
+		if value >= results[i].Score {
+			return results[i].Text
+		}
+	}
+	return ""
 }

@@ -53,13 +53,13 @@ func (m *Menu) Render(w fyne.Window) {
 			})
 		},
 		func(id widget.ListItemID, object fyne.CanvasObject) {
-			object.(*widget.Button).SetText(fmt.Sprint(id+1, " тема"))
+			object.(*widget.Button).SetText(m.sets[id].Get()[0].Get().Theme)
 			object.(*widget.Button).OnTapped = func() {
 				m.sets[id].Render(w)
 			}
 		})
 
-	text := styledTxt("<Look at our test sets3>")
+	text := styledTxt("<Набор тем>")
 
 	w.SetContent(
 		container.NewCenter(
@@ -88,7 +88,7 @@ func (m *Menu) setsToRenderers() {
 }
 
 func styledTxt(txt string) *canvas.Text {
-	text := canvas.NewText(txt, color.Black)
+	text := canvas.NewText(txt, color.White)
 	text.Alignment = fyne.TextAlignCenter
 	text.TextStyle = fyne.TextStyle{Italic: true}
 	text.TextSize = 17

@@ -1,55 +1,44 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
+
+var errUnexpectedReceivedType = errors.New("error: unexpected received type")
 
 type Validator interface {
 	Validate(interface{}) (float32, error)
+	Variable() string
 }
 
-var errUnexpectedReceivedType = errors.New("error: unexpected received type")
-var errUnknownQuestionType = errors.New("error: unexpected question type")
+func (r Report) Validate() error {
+	for _, a := range r.Answers {
+		res, err := a.Validate()
+		if err != nil {
+			log.Panicln(err)
+		}
+		r.Result[a.Question.Variable()] += res
+	}
+	return nil
+}
 
-func (q SingleCorrectQuestion) Validate(i interface{}) (float32, error) {
-	s, ok := i.(string)
+func (q Question) Validate(i interface{}) (float32, error) {
+	s, ok := i.([]string)
 	if !ok {
 		return 0, errUnexpectedReceivedType
 	}
-	if q.Correct == s {
-		return 1, nil
+	var sum float32
+	for _, v := range s {
+		sum += q.Opts[v]
 	}
-	return 0, nil
+	return sum, nil
 }
 
-func (q MultipleCorrectQuestion) Validate(i interface{}) (float32, error) {
-	/*s, ok := i.([]string)
-	if !ok {
-		return 0, errUnexpectedReceivedType
-	}*/
-	// TODO implement
-	return 0, nil
-}
-
-func (q WeightQuestion) Validate(i interface{}) (float32, error) {
-	s, ok := i.(string)
-	if !ok {
-		return 0, errUnexpectedReceivedType
-	}
-	return float32(q.Opts[s]), nil
+func (q Question) Variable() string {
+	return q.VarType
 }
 
 func (a Answer) Validate() (float32, error) {
 	return a.Question.Validate(a.Received)
-}
-
-func SwitchQuest(q Quest) Validator {
-	switch q.(type) {
-	case *SingleCorrectQuestion:
-		return q.(*SingleCorrectQuestion)
-	case *MultipleCorrectQuestion:
-		return q.(*MultipleCorrectQuestion)
-	case *WeightQuestion:
-		return q.(*WeightQuestion)
-	default:
-		return nil
-	}
 }

@@ -49,13 +49,12 @@ func (s *Set) Render(w fyne.Window) {
 		s.menu.Render(w)
 	}))
 
-	content := container.NewBorder(nil, buttons, nil, nil, container.NewCenter(
-		container.NewVBox(
-			styledTxt("<Look at our test sets3>"),
-			container.NewGridWrap(fyne.NewSize(500, 400), tests))))
-
-	w.SetContent(content)
-
+	w.SetContent(
+		container.NewCenter(
+			container.NewVBox(
+				styledTxt("<Набор тестов>"),
+				container.NewGridWrap(fyne.NewSize(500, 400), tests)),
+			buttons))
 }
 
 func (s *Set) testsToRenderers(h controller.Handler) {
